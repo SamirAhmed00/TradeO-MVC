@@ -1,0 +1,107 @@
+﻿@model List<Category>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+
+
+<!-- Check IF List Is Empty Or Not -->
+@if (Model == null || !Model.Any())
+{
+    <h2>@ViewBag.Message</h2>
+}
+else
+{
+    <div class="mb-3">
+        <h1>Categories List</h1>
+        <div class="d-flex align-items-center gap-2 customResponsiveSearchAndButtonCategryIndexView">
+            <!-- Search Input -->
+            <input type="text" id="searchInput" class="form-control border-black border-2 fs-4 w-75 rounded-3 text-black" placeholder="Search categories...">
+
+
+            <!-- Sort Dropdown -->
+            <div class="dropdown ">
+                <button class="btn btn-primary dropdown-toggle rounded-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Sort By
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item fs-5 cursor-pointer" asp-action="Index" asp-route-SortOrder="displayOrderAsc">Display Order <i class="bi bi-sort-numeric-up"></i></a></li>
+                    <li><a class="dropdown-item fs-5 cursor-pointer" asp-action="Index" asp-route-SortOrder="displayOrderDesc">Display Order <i class="bi bi-sort-numeric-down"></i></a></li>
+                    <li><a class="dropdown-item fs-5 cursor-pointer" asp-action="Index" asp-route-SortOrder="nameAsc">Alphabetical <i class="bi bi-sort-alpha-up"></i></a></li>
+                </ul>
+            </div>
+
+            <!-- Add New Category -->
+            <a asp-action="AddNew" asp-controller="Category" class="btn btn-outline-success fs-5 d-flex align-items-center gap-2 rounded-4">
+                <i class="bi bi-plus-circle-fill fs-2"></i>
+                Category
+            </a>
+        </div>
+    </div>
+    <!-- Categories CRUD Table -->
+    <div class="table-responsive rounded-4 overflow-hidden">
+        <table class="table table-bordered table-striped fs-4 rounded-4" id="categoriesTable">
+            <thead class="table-dark">
+                <tr>
+                    <th class="">Category Name</th>
+                    <th>Display Order</th>
+                    <th>Modifying</th>
+                </tr>
+            </thead>
+            <tbody class="text-black">
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DisplayOrder)
+                        </td>
+                        <td>
+                            <div class="d-flex flex-column flex-sm-row gap-2">
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning rounded-3 text-black fs-5" >Edit</a> 
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info rounded-3 text-black fs-5">Details</a>
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger rounded-3 text-black fs-5">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                }   
+            </tbody>
+        </table>
+    </div>
+}
+
+
+<!-- JS Code For Live Searching -->
+<script>
+    const searchInput = document.getElementById('searchInput');
+    const table = document.getElementById('categoriesTable');
+    const rows = table.getElementsByTagName('tr');
+
+    searchInput.addEventListener('keyup', function() {
+        const filter = searchInput.value.trim().toLowerCase();
+
+        // Don't Search If Input Is Empty OR Has Spaces
+        if (filter === "") {
+            for (let i = 1; i < rows.length; i++) {
+                rows[i].style.display = '';
+            }
+            return;
+        }
+
+        for (let i = 1; i < rows.length; i++) { 
+            const cells = rows[i].getElementsByTagName('td');
+            let match = false;
+            for (let j = 0; j < cells.length; j++) {
+                if (cells[j].innerText.toLowerCase().includes(filter)) {
+                    match = true;
+                    break;
+                }
+            }
+            rows[i].style.display = match ? '' : 'none';
+        }
+    });
+</script>
