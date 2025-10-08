@@ -69,9 +69,52 @@ body {
     }
 }
 
+/* To Make Any Elements Inside Container Take Full Width */
+@media (max-width: 767px) and (min-width: 576px) {
+    .container,
+    .container-fluid {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+    }
+}
+
+
+
+/* To Make Table SHrink In Smaller Screens */
+@media (max-width: 520px) {
+    
+    #categoriesTable tr {
+        font-size: 14px;
+    }
+
+    #categoriesTable td {
+        padding: 4px 6px !important;
+    }
+}
+
+
+/*.modal {
+    backdrop-filter: none !important;
+    filter: none !important;
+}*/
+
+.modal-dialog {
+    box-shadow: none;
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--bs-border-color, #dee2e6) !important;
+}
+
+.modal-footer {
+    border-top: 1px solid var(--bs-border-color, #dee2e6) !important;
+}
+
+
 
 /* ---------------- Global Styling ---------------------*/
-
 ::selection {
-    background-color: #59AC77; 
+    background-color: #59AC77;
 }

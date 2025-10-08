@@ -1,0 +1,52 @@
+﻿@* ==============================
+   🔔 Toastr Notifications Partial
+   ==============================
+   Handles both Success & Error TempData messages.
+   Includes Toastr and jQuery only when needed.
+*@
+
+@if (TempData["Success"] != null || TempData["Error"] != null)
+{
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
+    <script>
+
+        if (!window.toastrShown) {
+            toastr.options = {
+                "closeButton": true,
+                "debug": false,
+                "newestOnTop": false,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": true,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+            };
+
+            @if (TempData["Success"] != null)
+            {
+                    <text>
+                        toastr["success"]("@TempData["Success"]");
+                    </text>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                    <text>
+                        toastr["error"]("@TempData["Error"]");
+                    </text>
+            }
+
+            window.toastrShown = true; 
+        }
+    </script>
+    
+}
