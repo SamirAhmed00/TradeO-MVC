@@ -16,7 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ViewModels\Categories\" />
+    <ProjectReference Include="..\TradeO.DataAccess\TradeO.DataAccess.csproj" />
+    <ProjectReference Include="..\TradeO.Models\TradeO.Models.csproj" />
   </ItemGroup>
 
 </Project>

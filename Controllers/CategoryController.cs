@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using TradeO.DataAccess.Data;
+using TradeO.Models;
 
 namespace TradeO.Controllers
 {

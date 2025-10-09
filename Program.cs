@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using TradeO.Data;
+using TradeO.DataAccess.Data;
 
 namespace TradeO
 {
