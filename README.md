@@ -107,6 +107,6 @@ TradeO/
 
 ### DevOps & Tools
 
-- **SQL Server** - Database
+- **SQL Server & PostgreSQL** - Database
 - **IIS / Kestrel** - Application hosting
 - **Git&Github** - Version control
