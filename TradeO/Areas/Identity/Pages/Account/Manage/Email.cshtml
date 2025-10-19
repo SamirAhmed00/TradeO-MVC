@@ -1,0 +1,51 @@
+﻿@page
+@model EmailModel
+@{
+    ViewData["Title"] = "Manage Email";
+    ViewData["ActivePage"] = ManageNavPages.Email;
+}
+
+<div class="row py-5">
+    <div class="col-md-9 mx-auto">
+        <div class="card shadow-sm border-0 rounded-4 p-4">
+            <div class="card-body">
+                <h1 class="text-primary fw-bold text-center mb-4">@ViewData["Title"]</h1>
+
+                <partial name="_StatusMessage" for="StatusMessage" />
+
+                <form id="email-form" method="post">
+                    <div asp-validation-summary="All" class="text-danger mb-3" role="alert"></div>
+
+                    @if (Model.IsEmailConfirmed)
+                    {
+                        <div class="form-floating mb-3 input-group">
+                            <input asp-for="Email" class="form-control" placeholder="Your current email" disabled />
+                            <span class="input-group-text text-success fw-bold h-100">✓</span>
+                            <label asp-for="Email">Current Email</label>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="form-floating mb-3 input-group">
+                            <input asp-for="Email" class="form-control" placeholder="Your current email" disabled />
+                            <button type="submit" asp-page-handler="SendVerificationEmail" class="btn btn-outline-primary">Verify</button>
+                            <label asp-for="Email">Current Email</label>
+                        </div>
+                    }
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.NewEmail" class="form-control" autocomplete="email" placeholder="Enter new email" />
+                        <label asp-for="Input.NewEmail">New Email</label>
+                        <span asp-validation-for="Input.NewEmail" class="text-danger"></span>
+                    </div>
+
+                    <button type="submit" asp-page-handler="ChangeEmail" class="w-100 btn btn-primary btn-lg rounded-3 fw-semibold">Change Email</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

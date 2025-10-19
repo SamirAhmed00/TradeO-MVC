@@ -1,0 +1,96 @@
+﻿@model Company
+
+@{
+    ViewData["Title"] = "Create a New Company";
+}
+
+<!-- Create new Company Form-->
+<div class="container-fluid px-3 px-md-5">
+    <div class="card shadow-sm p-4 rounded mx-auto"
+         style="
+            background-color: #f8f9fa; /* رمادي فاتح مريح للعين */
+            border: 1px solid #dee2e6;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 900px;
+        ">
+
+        <h1 class="mb-4 text-black text-center">Create a New Company</h1>
+
+        <form asp-action="Create" asp-controller="Company" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row g-4">
+
+                <div class="col-12 col-md-6">
+                    <label asp-for="Name" class="form-label fw-bold fs-5 text-black">Company Name</label>
+                    <input asp-for="Name" class="form-control rounded-3 fs-5 text-black" placeholder="Enter company name">
+                    <span asp-validation-for="Name" class="text-danger fw-bold mt-2 d-block fs-6"></span>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <label asp-for="StreetAddress" class="form-label fw-bold fs-5 text-black">Street Address</label>
+                    <input asp-for="StreetAddress" class="form-control rounded-3 fs-5 text-black" placeholder="Enter street address">
+                    <span asp-validation-for="StreetAddress" class="text-danger fw-bold mt-2 d-block fs-6"></span>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <label asp-for="City" class="form-label fw-bold fs-5 text-black">City</label>
+                    <input asp-for="City" class="form-control rounded-3 fs-5 text-black" placeholder="Enter city">
+                    <span asp-validation-for="City" class="text-danger fw-bold mt-2 d-block fs-6"></span>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <label asp-for="State" class="form-label fw-bold fs-5 text-black">State</label>
+                    <input asp-for="State" class="form-control rounded-3 fs-5 text-black" placeholder="Enter state">
+                    <span asp-validation-for="State" class="text-danger fw-bold mt-2 d-block fs-6"></span>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <label asp-for="PostalCode" class="form-label fw-bold fs-5 text-black">Zip Code</label>
+                    <input asp-for="PostalCode" class="form-control rounded-3 fs-5 text-black" placeholder="Enter zip code">
+                    <span asp-validation-for="PostalCode" class="text-danger fw-bold mt-2 d-block fs-6"></span>
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <label asp-for="PhoneNumber" class="form-label fw-bold fs-5 text-black">Phone Number</label>
+                    <input asp-for="PhoneNumber" class="form-control rounded-3 fs-5 text-black" placeholder="Enter phone number">
+                    <span asp-validation-for="PhoneNumber" class="text-danger fw-bold mt-2 d-block fs-6"></span>
+                </div>
+
+            </div>
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-success px-5 py-3 rounded-3 fs-5 shadow-sm">
+                    <i class="bi bi-plus-circle me-2"></i> Create Company
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="text-end mt-4">
+        <a class="btn btn-outline-primary x-5 py-3 rounded-3 fs-5 shadow-sm" asp-action="Index">
+            Back To Companies List
+        </a>
+    </div>
+
+</div>
+
+<!-- Validation Message -->
+@if (ViewBag.Message != null)
+{
+    <div class="alert alert-warning text-center fs-5 fw-bold mt-3">
+        @ViewBag.Message
+    </div>
+}
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger mt-3">
+        Please correct the errors below before submitting the form.
+    </div>
+}
+
+<!-- JS Validation -->
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

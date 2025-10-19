@@ -1,0 +1,72 @@
+﻿@model int
+@{
+    ViewData["Title"] = "Order Confirmation";
+}
+
+<div class="container py-5 text-center">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 p-5 bg-white">
+
+                <div class="mb-4">
+                    <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+                </div>
+
+                <h2 class="fw-bold text-dark mb-3 me-auto text-center">Thank you for your order!</h2>
+
+                <p class="text-muted fs-5 mb-4">
+                    Your order has been placed successfully. You’ll receive a confirmation email shortly.
+                </p>
+
+                <div class="border-top pt-3 mt-3 mb-4">
+                    <h5 class="fw-semibold">Order ID:</h5>
+                    <p class="fs-5 text-primary fw-bold mb-0">#@Model</p>
+                </div>
+
+                <p class="text-secondary mb-4">
+                    You can track your order status anytime from your <strong>Orders</strong> page.
+                </p>
+
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-primary px-4 py-2 fw-semibold">
+                        <i class="bi bi-house"></i> Continue Shopping
+                    </a>
+
+                    <a asp-controller="Order" asp-action="Details" asp-route-id="@Model" class="btn btn-primary px-4 py-2 fw-semibold">
+                        <i class="bi bi-receipt"></i> View Order Details
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .card {
+        max-width: 700px;
+        margin: auto;
+    }
+
+    .btn {
+        border-radius: 0.5rem;
+    }
+
+    .btn-primary {
+        background-color: #0d6efd;
+        border: none;
+    }
+
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+        }
+
+    .btn-outline-primary:hover {
+        background-color: #0d6efd;
+        color: #fff;
+    }
+</style>

@@ -1,0 +1,149 @@
+﻿@model List<Company>
+
+@{
+    ViewData["Title"] = "Companies";
+}
+
+<div class="mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <h1 class="fw-bold mb-0 text-primary">Companies List</h1>
+
+        <div class="d-flex flex-wrap align-items-center gap-3 customResponsiveSearchAndButtonCategryIndexView">
+
+            <!-- Search Input -->
+            <div>
+                <input type="text" id="searchInput" class="form-control border-black border-2 fs-5 rounded-3 text-black"
+                       placeholder="Search companies...">
+            </div>
+
+
+            <!-- Add New Company -->
+            <a asp-action="Create" asp-controller="Company"
+               class="btn btn-outline-success fs-5 d-flex align-items-center gap-2 rounded-4">
+                <i class="bi bi-plus-circle-fill fs-2"></i>
+                Company
+            </a>
+        </div>
+    </div>
+</div>
+
+
+@if (Model == null || !Model.Any())
+{
+    
+    <h2 class="text-center text-muted mt-5">@ViewBag.Message</h2>
+
+}
+else
+{
+   
+
+    <!-- Companies CRUD Table -->
+    <div class="table-responsive rounded-4 overflow-hidden shadow-sm">
+        <table class="table table-bordered table-striped fs-5 rounded-4" id="companiesTable">
+            <thead class="table-dark">
+                <tr>
+                    <th>Company Name</th>
+                    <th>City</th>
+                    <th>State</th>
+                    <th>Zip Code</th>
+                    <th>Phone</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="text-black">
+                @foreach (var company in Model)
+                {
+                    <tr>
+                        <td>@company.Name</td>
+                        <td>@company.City</td>
+                        <td>@company.State</td>
+                        <td>@company.PostalCode</td>
+                        <td>@company.PhoneNumber</td>
+                        <td>
+                            <div class="d-flex flex-column flex-sm-row justify-content-center gap-2">
+                                <a asp-action="Edit" asp-route-CompanyId="@company.Id"
+                                   class="btn btn-warning text-black rounded-3 fs-6">
+                                    <i class="bi bi-pencil-square"></i> Edit
+                                </a>
+
+                               
+                                <button type="button" class="btn btn-danger rounded-3 text-white fs-6"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#deleteModal"
+                                        data-company-name="@company.Name"
+                                        data-company-id="@company.Id">
+                                    <i class="bi bi-trash"></i> Delete
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<!-- Modal For Delete -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-danger text-white">
+                <h1 class="modal-title fs-3" id="deleteModalLabel">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    Delete Company
+                </h1>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body fs-5 text-center">
+                <p id="companyToDelete" class="fw-bold"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary rounded-3" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteCompanyForm" asp-action="Delete" asp-controller="Company" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="CompanyId" id="deleteCompanyId" />
+                    <button type="submit" class="btn btn-outline-danger rounded-3">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JS -->
+<script>
+    // Live Search
+    const searchInput = document.getElementById('searchInput');
+    const table = document.getElementById('companiesTable');
+    const rows = table.getElementsByTagName('tr');
+
+    searchInput.addEventListener('keyup', function () {
+        const filter = searchInput.value.trim().toLowerCase();
+        for (let i = 1; i < rows.length; i++) {
+            const cells = rows[i].getElementsByTagName('td');
+            let match = false;
+            for (let j = 0; j < cells.length; j++) {
+                if (cells[j].innerText.toLowerCase().includes(filter)) {
+                    match = true;
+                    break;
+                }
+            }
+            rows[i].style.display = match ? '' : 'none';
+        }
+    });
+
+    // Modal dynamic binding
+    const deleteModal = document.getElementById('deleteModal');
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const companyName = button.getAttribute('data-company-name');
+        const companyId = button.getAttribute('data-company-id');
+
+        const modalBodyText = deleteModal.querySelector('#companyToDelete');
+        modalBodyText.innerHTML = `Are you sure you want to delete company:
+            <span class="text-danger fw-bold">${companyName}</span>?`;
+
+        const deleteInput = deleteModal.querySelector('#deleteCompanyId');
+        deleteInput.value = companyId;
+    });
+</script>

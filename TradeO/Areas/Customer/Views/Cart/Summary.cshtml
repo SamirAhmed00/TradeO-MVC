@@ -1,0 +1,181 @@
+﻿@model TradeO.Models.ViewModels.ShoppingCartVM
+@{
+    ViewData["Title"] = "Order Summary";
+    var subtotal = Model.ShoppingCartList.Sum(item => item.Price * item.Count);
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="row g-4">
+
+                <!-- Shipping Details -->
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white subtle-card">
+                        <h4 class="fw-bold text-primary mb-4 d-flex align-items-center gap-2">
+                            <i class="bi bi-truck"></i> Shipping Details
+                        </h4>
+
+                        <form method="post" asp-action="Summary">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                            <div class="mb-3">
+                                <label asp-for="OrderHeader.Name" class="form-label fw-semibold me-3"></label>
+                                <input asp-for="OrderHeader.Name" class="form-control rounded-3" />
+                                <span asp-validation-for="OrderHeader.Name" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="OrderHeader.PhoneNumber" class="form-label fw-semibold me-3"></label>
+                                <input asp-for="OrderHeader.PhoneNumber" class="form-control rounded-3" />
+                                <span asp-validation-for="OrderHeader.PhoneNumber" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="OrderHeader.StreetAddress" class="form-label fw-semibold me-3"></label>
+                                <input asp-for="OrderHeader.StreetAddress" class="form-control rounded-3" />
+                                <span asp-validation-for="OrderHeader.StreetAddress" class="text-danger"></span>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="OrderHeader.City" class="form-label fw-semibold me-3"></label>
+                                    <input asp-for="OrderHeader.City" class="form-control rounded-3" />
+                                    <span asp-validation-for="OrderHeader.City" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="OrderHeader.State" class="form-label fw-semibold me-3"></label>
+                                    <input asp-for="OrderHeader.State" class="form-control rounded-3" />
+                                    <span asp-validation-for="OrderHeader.State" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="OrderHeader.PostalCode" class="form-label fw-semibold me-3"></label>
+                                <input asp-for="OrderHeader.PostalCode" class="form-control rounded-3" />
+                                <span asp-validation-for="OrderHeader.PostalCode" class="text-danger"></span>
+                            </div>
+
+                            <input type="hidden" asp-for="OrderHeader.OrderTotal" value="@subtotal" />
+
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary-gradient w-100 fw-semibold rounded-3 py-2">
+                                    <i class="bi bi-check-circle"></i> Place Order
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Order Summary -->
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white subtle-card">
+                        <h4 class="fw-bold text-dark mb-4 d-flex align-items-center gap-2">
+                            <i class="bi bi-receipt"></i> Order Summary
+                        </h4>
+
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Qty</th>
+                                        <th>Price</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.ShoppingCartList)
+                                    {
+                                        <tr>
+                                            <td>@item.Product.Name</td>
+                                            <td>@item.Count</td>
+                                            <td>$@item.Price.ToString("0.00")</td>
+                                            <td class="fw-semibold text-success">$@(item.Price* item.Count)</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="border-top pt-3 mt-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="fw-semibold text-muted">Subtotal</span>
+                                <span class="fw-semibold text-dark">$@subtotal.ToString("0.00")</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="fw-semibold text-muted">Shipping</span>
+                                <span class="fw-semibold text-dark">$0.00</span>
+                            </div>
+                            <div class="d-flex justify-content-between border-top mt-3 pt-3">
+                                <span class="fw-bold fs-5">Total</span>
+                                <span class="fw-bold text-primary fs-5">$@subtotal.ToString("0.00")</span>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 text-center text-muted small">
+                            <i class="bi bi-calendar-check"></i>
+                            <span class="fw-semibold">Estimated Arrival:</span>
+                            <span class="text-primary">@DateTime.Now.AddDays(7).ToString("dddd, MMM d, yyyy", new System.Globalization.CultureInfo("en-US"))</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<style>
+    body {
+        background-color: #f5f7fa;
+        font-family: "Poppins", sans-serif;
+    }
+
+    .subtle-card {
+        background: #ffffffcc;
+        backdrop-filter: blur(4px);
+    }
+
+    .card {
+        transition: all 0.3s ease-in-out;
+    }
+
+        .card:hover {
+            /* transform: translateY(-3px); */
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        }
+
+    input:focus {
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, .25);
+        border-color: #86b7fe;
+    }
+
+    .btn-primary-gradient {
+        background: linear-gradient(135deg, #4e9af1, #2176ff);
+        border: none;
+        color: white;
+        transition: 0.3s;
+    }
+
+        .btn-primary-gradient:hover {
+            background: linear-gradient(135deg, #3d86e0, #1b62d8);
+        }
+
+    h4 i {
+        color: #2176ff;
+    }
+
+    th {
+        font-weight: 600;
+        color: #444;
+    }
+
+    td {
+        color: #555;
+    }
+</style>

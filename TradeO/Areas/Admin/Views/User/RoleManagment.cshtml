@@ -1,0 +1,140 @@
+﻿@model TradeO.Models.ViewModels.RoleManagmentVM
+
+@{
+    ViewData["Title"] = "Manage User Role";
+}
+
+<div class="container py-5">
+    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+
+        <div class="card-header bg-primary bg-gradient text-white p-4 rounded-top-4">
+            <h2 class="mb-0 fs-3 fw-light">
+                <i class="bi bi-person-gear me-2"></i> Manage User Role
+            </h2>
+        </div>
+
+        <div class="card-body p-4 p-md-5">
+
+            @* Notification Messages (Modernized Alerts) *@
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show rounded-2" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i> @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show rounded-2" role="alert">
+                    <i class="bi bi-x-octagon-fill me-2"></i> @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <form method="post" asp-action="RoleManagment" class="needs-validation" novalidate>
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" asp-for="ApplicationUser.Id" />
+
+                <div class="mb-5 p-4 border rounded-3 bg-light bg-gradient shadow-sm">
+                    <h4 class="text-secondary mb-4 border-bottom pb-2">
+                        <i class="bi bi-info-circle me-2"></i> Current User Profile
+                    </h4>
+
+                    <div class="row g-3">
+                        <div class="col-lg-6">
+                            <label class="form-label text-muted small fw-bold mb-0">Full Name</label>
+                            <p class="form-control-plaintext border-bottom pb-1 fs-5">@Model.ApplicationUser.Name</p>
+                        </div>
+                        <div class="col-lg-6">
+                            <label class="form-label text-muted small fw-bold mb-0">Email Address</label>
+                            <p class="form-control-plaintext border-bottom pb-1 fs-5">@Model.ApplicationUser.Email</p>
+                        </div>
+                        <div class="col-lg-6">
+                            <label class="form-label text-muted small fw-bold mb-0">Current Role</label>
+                            <p class="form-control-plaintext pb-1">
+                                <span class="badge bg-info text-dark rounded-pill fs-6 px-3 py-2">
+                                    <i class="bi bi-tag-fill me-1"></i> @Model.ApplicationUser.Role
+                                </span>
+                            </p>
+                        </div>
+                        <div class="col-lg-6">
+                            <label class="form-label text-muted small fw-bold mb-0">Assigned Company</label>
+                            <p class="form-control-plaintext pb-1 fs-5">
+                                @(Model.ApplicationUser.Company?.Name ?? "N/A")
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <h4 class="text-primary mb-4 border-bottom pb-2">
+                    <i class="bi bi-list-check me-2"></i> Update Role Assignment
+                </h4>
+
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label asp-for="ApplicationUser.Role" class="form-label fw-bold">Select New Role</label>
+                        <select asp-for="ApplicationUser.Role" asp-items="Model.RoleList"
+                                class="form-select border-secondary border-2 rounded-2 fs-5 shadow-sm" id="roleSelect" required>
+                            <option disabled selected value="">-- Choose Role --</option>
+                        </select>
+                        <span asp-validation-for="ApplicationUser.Role" class="text-danger mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-md-6" id="companyField" style="display:none;">
+                        <label asp-for="ApplicationUser.CompanyId" class="form-label fw-bold">Select Company</label>
+                        <select asp-for="ApplicationUser.CompanyId" asp-items="Model.CompanyList"
+                                class="form-select border-secondary border-2 rounded-2 fs-5 shadow-sm">
+                            <option selected value="">-- Choose Company --</option>
+                        </select>
+                        <span asp-validation-for="ApplicationUser.CompanyId" class="text-danger mt-1 d-block"></span>
+                    </div>
+                </div>
+
+
+                <div class="mt-5 pt-4 border-top">
+                    <button type="submit" class="btn btn-primary rounded-2 px-4 me-3 btn-lg shadow-sm">
+                        <i class="bi bi-save me-2"></i> Save Changes
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-secondary rounded-2 px-4 btn-lg">
+                        <i class="bi bi-x-circle me-2"></i> Cancel & Back
+                    </a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const roleSelect = document.getElementById('roleSelect');
+            const companyField = document.getElementById('companyField');
+
+            // The role name that requires a Company ID (Ensure this matches SD.Role_Company value)
+            const companyRoleName = "Company";
+
+            function toggleCompanyField() {
+                const selectedRole = roleSelect.value;
+
+                if (selectedRole === companyRoleName) {
+                    companyField.style.display = 'block';
+                } else {
+                    companyField.style.display = 'none';
+                }
+            }
+
+            // 1. Run on page load (to handle pre-selected roles)
+            toggleCompanyField();
+
+            // 2. Run on selection change
+            roleSelect.addEventListener('change', toggleCompanyField);
+        });
+    </script>
+
+    @{
+        // Adds client-side validation scripts
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

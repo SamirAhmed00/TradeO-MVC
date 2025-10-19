@@ -1,0 +1,301 @@
+﻿@model OrderVM
+@using System.Globalization
+@using TradeO.Utility
+@{
+    // Setup USD currency formatting
+    var usd = CultureInfo.GetCultureInfo("en-US");
+    ViewData["Title"] = "Order Details"; // Adding a page title
+}
+
+<style>
+    /* Custom style for readonly fields to have a subtle border */
+    .form-control-plaintext[readonly] {
+        border: 1px solid #dee2e6 !important; /* Light grey border */
+        padding: .375rem .75rem; /* Add padding similar to form-control */
+        border-radius: .2rem; /* Apply rounded corners */
+        background-color: #f8f9fa; /* Light background color */
+        color: #212529; /* Ensure text is dark */
+    }
+
+    /* Override for specific text to ensure black color */
+    .text-black-important {
+        color: #000 !important;
+    }
+</style>
+
+<form method="post">
+    <input asp-for="OrderHeader.Id" hidden />
+    <br />
+    <div class="container">
+        <div class="card shadow-lg border-0 mb-4 bg-white rounded-3">
+            <div class="card-header bg-light text-secondary py-3 border-bottom">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h4 class="mb-0 text-primary"><i class="bi bi-receipt-fill me-2"></i> Order Summary - #@Model.OrderHeader.Id</h4>
+                    </div>
+                    <div class="col-md-6 text-md-end text-center mt-2 mt-md-0">
+                        <a asp-action="Index" class="btn btn-outline-primary btn-sm fw-bold rounded-2">
+                            <i class="bi bi-arrow-left"></i> Back to Orders
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="row g-4">
+                    @{
+                        // Determine edit permission
+                        bool canEdit = User.IsInRole(SD.Role_Admin) || User.IsInRole(SD.Role_Employee);
+                    }
+
+                    <div class="col-12 col-lg-6 border-end">
+                        <h5 class="text-secondary mb-4 border-bottom pb-2">Pickup/Shipping Details</h5>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-12">
+                                <label class="form-label fw-semibold text-black-important">Name</label>
+                                @if (canEdit)
+                                {
+                                    <input asp-for="OrderHeader.Name" type="text" class="form-control rounded-2" />
+                                }
+                                else
+                                {
+                                    <input asp-for="OrderHeader.Name" type="text" class="form-control-plaintext rounded-2" readonly="readonly" />
+                                }
+                                <span asp-validation-for="OrderHeader.Name" class="text-danger small"></span>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold text-black-important">Phone Number</label>
+                                @if (canEdit)
+                                {
+                                    <input asp-for="OrderHeader.PhoneNumber" type="text" class="form-control rounded-2" />
+                                }
+                                else
+                                {
+                                    <input asp-for="OrderHeader.PhoneNumber" type="text" class="form-control-plaintext rounded-2" readonly="readonly" />
+                                }
+                                <span asp-validation-for="OrderHeader.PhoneNumber" class="text-danger small"></span>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold text-black-important">Email</label>
+                                @{
+                                    string userEmail = Model.OrderHeader.ApplicationUser?.Email ?? "N/A";
+                                }
+                                <input value ="@userEmail" readonly type="text" class="form-control-plaintext rounded-2" />
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <h6 class="text-info mt-4 mb-2">Shipping Address</h6>
+                            <div class="col-md-6">
+                                <label class="form-label small text-black-important">Street Address</label>
+                                @if (canEdit)
+                                {
+                                    <input asp-for="OrderHeader.StreetAddress" type="text" class="form-control rounded-2" />
+                                }
+                                else
+                                {
+                                    <input asp-for="OrderHeader.StreetAddress" type="text" class="form-control-plaintext rounded-2" readonly="readonly" />
+                                }
+                                <span asp-validation-for="OrderHeader.StreetAddress" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-black-important">City</label>
+                                @if (canEdit)
+                                {
+                                    <input asp-for="OrderHeader.City" type="text" class="form-control rounded-2" />
+                                }
+                                else
+                                {
+                                    <input asp-for="OrderHeader.City" type="text" class="form-control-plaintext rounded-2" readonly="readonly" />
+                                }
+                                <span asp-validation-for="OrderHeader.City" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-black-important">State</label>
+                                @if (canEdit)
+                                {
+                                    <input asp-for="OrderHeader.State" type="text" class="form-control rounded-2" />
+                                }
+                                else
+                                {
+                                    <input asp-for="OrderHeader.State" type="text" class="form-control-plaintext rounded-2" readonly="readonly" />
+                                }
+                                <span asp-validation-for="OrderHeader.State" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small text-black-important">Postal Code</label>
+                                @if (canEdit)
+                                {
+                                    <input asp-for="OrderHeader.PostalCode" type="text" class="form-control rounded-2" />
+                                }
+                                else
+                                {
+                                    <input asp-for="OrderHeader.PostalCode" type="text" class="form-control-plaintext rounded-2" readonly="readonly" />
+                                }
+                                <span asp-validation-for="OrderHeader.PostalCode" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+
+                        <h6 class="text-secondary mt-4 mb-2 border-top pt-2">Shipping Information</h6>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-12">
+                                <label class="form-label fw-semibold text-black-important">Carrier</label>
+                                @if (canEdit)
+                                {
+                                    <input asp-for="OrderHeader.Carrier" id="carrier" type="text" class="form-control rounded-2" />
+                                }
+                                else
+                                {
+                                    <input asp-for="OrderHeader.Carrier" id="carrier" type="text" class="form-control-plaintext rounded-2" readonly="readonly" />
+                                }
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold text-black-important">Tracking Number</label>
+                                @if (canEdit)
+                                {
+                                    <input asp-for="OrderHeader.TrackingNumber" id="trackingNumber" type="text" class="form-control rounded-2" />
+                                }
+                                else
+                                {
+                                    <input asp-for="OrderHeader.TrackingNumber" id="trackingNumber" type="text" class="form-control-plaintext rounded-2" readonly="readonly" />
+                                }
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold text-black-important">Shipping Date</label>
+                                <input value="@(Model.OrderHeader.ShippingDate.Year > 1 ? Model.OrderHeader.ShippingDate.ToShortDateString() : "Not Shipped Yet")" readonly type="text" class="form-control-plaintext rounded-2" />
+                            </div>
+                        </div>
+
+                        @if (canEdit)
+                        {
+                            <div class="d-grid mt-4">
+                                <button type="submit" asp-action="UpdateOrderDetail" class="btn btn-warning w-100 rounded-2">
+                                    <i class="bi bi-save-fill me-2"></i> Update Order Details
+                                </button>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="col-12 col-lg-6">
+                        <h5 class="text-secondary mb-4 border-bottom pb-2">Order Items & Payment</h5>
+
+                        <div class="alert alert-info text-center fw-bold py-2 mb-4 rounded-2" role="alert">
+                            <i class="bi bi-tag-fill me-2"></i> Order Status: @Model.OrderHeader.OrderStatus
+                        </div>
+
+                        <ul class="list-group mb-4 border rounded-3 overflow-hidden">
+                            @foreach (var detail in Model.OrderDetail)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                                    <div class="me-auto">
+                                        <h6 class="my-0 text-dark fw-bold">@detail.Product.Name</h6>
+                                        <small class="text-muted">Quantity: @detail.Count x @detail.Price.ToString("C", usd)</small>
+                                    </div>
+                                    <span class="badge bg-success text-white p-2 fw-normal">
+                                        @((detail.Count * detail.Price).ToString("C", usd))
+                                    </span>
+                                </li>
+                            }
+                            <li class="list-group-item bg-light d-flex justify-content-between py-3">
+                                <strong class="text-dark">ORDER TOTAL</strong>
+                                <strong class="text-dark fs-5">@Model.OrderHeader.OrderTotal.ToString("C", usd)</strong>
+                            </li>
+                        </ul>
+
+                        <h6 class="text-secondary mt-4 mb-2 border-bottom pt-2">Payment Details</h6>
+                        <div class="mb-3 row">
+                            <label class="col-5 col-form-label fw-semibold text-black-important small">Payment/Due Date</label>
+                            <div class="col-7">
+                                <input value="@(Model.OrderHeader.SessionId == null ? Model.OrderHeader.PaymentDueDate.ToShortDateString() : Model.OrderHeader.PaymentDate.ToShortDateString())" readonly type="text" class="form-control-plaintext rounded-2" />
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label class="col-5 col-form-label fw-semibold text-black-important small">Payment Status</label>
+                            <div class="col-7">
+                                <span class="badge @(Model.OrderHeader.PaymentStatus == SD.PaymentStatusApproved ? "bg-success" : "bg-warning text-dark") fs-6 rounded-2">
+                                    @Model.OrderHeader.PaymentStatus
+                                </span>
+                            </div>
+                        </div>
+
+                        @if (canEdit)
+                        {
+                            <div class="mb-2 row">
+                                <label class="col-5 col-form-label small text-black-important text-muted">Session ID</label>
+                                <div class="col-7"><input asp-for="OrderHeader.SessionId" readonly class="form-control form-control-sm rounded-2" /></div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label class="col-5 col-form-label small text-black-important text-muted">Payment Intent ID</label>
+                                <div class="col-7"><input asp-for="OrderHeader.PaymentIntentId" readonly class="form-control form-control-sm rounded-2" /></div>
+                            </div>
+                        }
+
+                        <div class="d-grid gap-2 mt-4 pt-3 border-top">
+                            @if (Model.OrderHeader.PaymentStatus == SD.PaymentStatusDelayedPayment &&
+                                                        Model.OrderHeader.OrderStatus == SD.StatusShipped)
+                            {
+                                @*Pay Now  Button  *@
+
+                                <button type="submit" class="btn btn-success rounded-2">
+                                    <i class="bi bi-credit-card-fill me-2"></i> Pay Now
+                                </button>
+                            }
+
+                            @if (canEdit)
+                            {
+                                @* Start Processing Button  *@
+
+                                @if (Model.OrderHeader.OrderStatus == SD.StatusApproved)
+                                {
+                                    <button asp-action="StartProcessing" type="submit" class="btn btn-primary rounded-2">
+                                        <i class="bi bi-play-fill me-2"></i> Start Processing
+                                    </button>
+                                }
+                                 @* Ship Order Button  *@
+                                else if (Model.OrderHeader.OrderStatus == SD.StatusInProcess)
+                                {
+                                    <button asp-action="ShipOrder" onclick="return validateInput()" type="submit" class="btn btn-primary rounded-2">
+                                        <i class="bi bi-send-fill me-2"></i> Ship Order
+                                    </button>
+                                }
+
+                                @if (Model.OrderHeader.OrderStatus != SD.StatusRefunded &&
+                                                            Model.OrderHeader.OrderStatus != SD.StatusCancelled &&
+                                                            Model.OrderHeader.OrderStatus != SD.StatusShipped)
+                                {
+                                    @* Cancel Order Button  *@
+
+                                    <button asp-action="CancelOrder" type="submit" class="btn btn-outline-danger rounded-2">
+                                        <i class="bi bi-x-circle-fill me-2"></i> Cancel Order
+                                    </button>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function validateInput() {
+            // Use .trim() to ensure input is not just whitespace
+            if (document.getElementById("carrier").value.trim() == "") {
+                Swal.fire({ icon: 'error', title: 'Oops...', text: 'Please enter the carrier name!' });
+                return false;
+            }
+            if (document.getElementById("trackingNumber").value.trim() == "") {
+                Swal.fire({ icon: 'error', title: 'Oops...', text: 'Please enter a tracking number!' });
+                return false;
+            }
+            return true;
+        }
+    </script>
+}

@@ -1,0 +1,178 @@
+﻿@model List<Category> 
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+
+<!-- Check IF List Is Empty Or Not -->
+@if (Model == null || !Model.Any())
+{
+    <h2>@ViewBag.Message</h2>
+}
+else
+{
+    <div class="mb-3">
+        <h1>Categories List</h1>
+        <div class="d-flex align-items-center gap-2 customResponsiveSearchAndButtonCategryIndexView">
+
+            <!-- Search Input -->
+            <div >
+                <input type="text" id="searchInput" class="form-control border-black border-2 fs-4 w-100 rounded-3 text-black" placeholder="Search categories...">
+            </div>
+
+
+            <!-- Sort Dropdown -->
+            <div class="dropdown ">
+                <button class="btn btn-primary dropdown-toggle rounded-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Sort By
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item fs-5 cursor-pointer" asp-action="Index" asp-route-SortOrder="displayOrderAsc">Display Order <i class="bi bi-sort-numeric-up"></i></a></li>
+                    <li><a class="dropdown-item fs-5 cursor-pointer" asp-action="Index" asp-route-SortOrder="displayOrderDesc">Display Order <i class="bi bi-sort-numeric-down"></i></a></li>
+                    <li><a class="dropdown-item fs-5 cursor-pointer" asp-action="Index" asp-route-SortOrder="nameAsc">Alphabetical <i class="bi bi-sort-alpha-up"></i></a></li>
+                </ul>
+            </div>
+
+            <!-- Add New Category -->
+            <a asp-action="Create" asp-controller="Category" class="btn btn-outline-success fs-5 d-flex align-items-center gap-2 rounded-4">
+                <i class="bi bi-plus-circle-fill fs-2"></i>
+                Category
+            </a>
+        </div>
+    </div>
+    <!-- Categories CRUD Table -->
+    <div class="table-responsive rounded-4 overflow-hidden">
+        <table class="table table-bordered table-striped fs-4 rounded-4" id="categoriesTable">
+            <thead class="table-dark">
+                <tr>
+                    <th class="">Category Name</th>
+                    <th>Display Order</th>
+                    <th>Modifying</th>
+                </tr>
+            </thead>
+            <tbody class="text-black">
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DisplayOrder)
+                        </td>
+                        <td>
+                            <div class="d-flex flex-column flex-sm-row gap-2">
+                                <a asp-action="Edit" asp-route-CategoryId="@item.Id" class="btn  btn-warning rounded-3 text-black fs-5 mx-2"> <i class="bi bi-pencil-square"></i> Edit</a>
+                                @* <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info rounded-3 text-black fs-5">Details</a> *@
+                                @* <a asp-action="Delete" asp-route-CategoryId="@item.Id" class="btn  btn-danger rounded-3 text-black fs-5 mx-2">  Delete</a> *@
+                                <!-- Button trigger modal -->
+                                <button type="button" class="btn  btn-danger rounded-3 text-black fs-5 mx-2"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#exampleModal"
+                                        data-category-name="@item.Name"
+                                        data-category-id="@item.Id">
+                                    <i class="bi bi-trash"></i> Delete
+                                </button>
+
+                            </div>
+                        </td>
+                    </tr>
+                }   
+            </tbody>
+        </table>
+    </div>
+}
+
+
+
+
+
+
+<!-- Modal For Delete Modal -- Only Show By Clicking Delete button of Each Row -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-3" id="exampleModalLabel"><i class="text-danger bi bi-exclamation-diamond-fill"></i> Deleting Category <i class="text-danger bi bi-exclamation-diamond-fill"></i></h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="categoryToDelete" class="fs-5 fw-bold text-black"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button"  class="btn btn-outline-primary rounded-3" data-bs-dismiss="modal">Close</button>
+                @* <a asp-action="Delete" asp-controller="Category" id="deleteCategoryLink" class="btn btn-outline-danger rounded-3">Delete Category</a> *@
+                
+                <!-- To Make Delete Goes As Post In Body Request Not Get -->
+                <form id="deleteCategoryForm" asp-action="Delete" asp-controller="Category" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="CategoryId" id="deleteCategoryId" />
+                    <button type="submit" class="btn btn-outline-danger rounded-3">Delete Category</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- JS Code -->
+<script>
+    @*JS Code For Live Searching*@
+    const searchInput = document.getElementById('searchInput');
+    const table = document.getElementById('categoriesTable');
+    const rows = table.getElementsByTagName('tr');
+
+    searchInput.addEventListener('keyup', function() {
+        const filter = searchInput.value.trim().toLowerCase();
+
+        // Don't Search If Input Is Empty OR Has Spaces
+        if (filter === "") {
+            for (let i = 1; i < rows.length; i++) {
+                rows[i].style.display = '';
+            }
+            return;
+        }
+
+        for (let i = 1; i < rows.length; i++) { 
+            const cells = rows[i].getElementsByTagName('td');
+            let match = false;
+            for (let j = 0; j < cells.length; j++) {
+                if (cells[j].innerText.toLowerCase().includes(filter)) {
+                    match = true;
+                    break;
+                }
+            }
+            rows[i].style.display = match ? '' : 'none';
+        }
+    });
+
+    @*Js Code To Dynamic Get Row Category Name In Bootstrap Modal *@
+    @* ⚠️ NOTE:
+           We're setting the delete link dynamically using JavaScript instead of using
+           ASP.NET Tag Helpers (asp-route-id), because the modal is shared for all rows.
+           If we used asp-route-id directly, we would need to create a separate modal
+           for every category, which would impact performance.
+           This JS approach updates the link and category name dynamically while keeping the page lightweight.
+    *@
+
+
+    const exampleModal = document.getElementById('exampleModal');
+    exampleModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const categoryName = button.getAttribute('data-category-name');
+        const categoryId = button.getAttribute('data-category-id');
+
+        const modalBodyText = exampleModal.querySelector('#categoryToDelete');
+            modalBodyText.innerHTML = `Are you sure you want to delete category: <span style="color:#d9534f; font-weight:bold; font-size: 20px">${categoryName}</span> ?`;
+
+        // set delete link dynamically
+        const deleteInput = exampleModal.querySelector('#deleteCategoryId');
+        deleteInput.value = categoryId;
+
+    });
+
+</script>

@@ -1,0 +1,152 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TradeO</title>
+    <script type="importmap"></script>
+    @* <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /> *@
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrapTheme.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap-overrides.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/TradeO.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    @* Toaster Notification *@
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm bg-primary border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand text-white" asp-area="" asp-controller="Home" asp-action="Index">TradeO</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow- me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link  text-white" asp-area="Customer" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link  text-white" asp-area="Admin" asp-controller="Order" asp-action="Index">Order Mangement</a>
+                        </li>
+                        @if (User.IsInRole(SD.Role_Admin))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-speedometer me-1"></i> Admin Dashboard
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-dark rounded-2 shadow-lg border-0">
+
+                                    <li>
+                                        <a class="dropdown-item" asp-area="Admin" asp-controller="Category" asp-action="Index">
+                                            <i class="bi bi-bookmark-fill me-2 text-info"></i> Categories
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="Admin" asp-controller="Product" asp-action="Index">
+                                            <i class="bi bi-stars me-2 text-warning"></i> Products
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="Admin" asp-controller="Company" asp-action="Index">
+                                            <i class="bi bi-building-fill me-2 text-success"></i> Companies
+                                        </a>
+                                    </li>
+
+                                    <li><hr class="dropdown-divider"></li> @* خط فاصل *@
+
+                                    <li>
+                                        <a class="dropdown-item" asp-area="Admin" asp-controller="User" asp-action="Index">
+                                            <i class="bi bi-people-fill me-2 text-primary"></i> Users Management
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Register">
+                                            <i class="bi bi-person-plus-fill me-2 text-danger"></i> Register New User
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        
+                            <!-- Cart Nav -->
+                            @if(HttpContextAccessor.HttpContext.Session.GetInt32(SD.SessionCart) != null)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link  text-white" asp-area="Customer" asp-controller="Cart" asp-action="Index">
+                                        Cart <i class="bi bi-cart"></i> (@HttpContextAccessor.HttpContext.Session.GetInt32(SD.SessionCart))
+                                    </a>
+                                </li>
+
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link  text-white" asp-area="Customer" asp-controller="Cart" asp-action="Index">
+                                        Cart <i class="bi bi-cart"></i>
+                                    </a>
+                                </li>
+                            }
+                        }
+                    </ul>
+
+                    <partial name="_LoginPartial" />
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            <partial name="_Notification" />
+            
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-white bg-primary">
+        <div class="container text-center">
+            TradO - Made With <span class="text-success fs-5">Samir Ahmed</span>
+        </div>
+    </footer>
+      
+    @* <!-- Tinymce Editor -->
+    <script src="https://cdn.tiny.cloud/1/rfu4448dfdkszqq9tcpnvv2x5oy9yw5c3yz4puhv45tmxbe9/tinymce/8/tinymce.min.js" referrerpolicy="origin" crossorigin="anonymous"></script> *@
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!-- Add Sweet Alert 2-->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Combine SweetAlert With Toaster Notification-->
+    <script>
+        
+        function showSweetAlertMessage() {
+            
+            if ('@TempData["Success"]' && '@TempData["Success"]' !== '') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: '@Html.Raw(TempData["Success"])',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            }
+            
+            if ('@TempData["Error"]' && '@TempData["Error"]' !== '') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: '@Html.Raw(TempData["Error"])',
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', showSweetAlertMessage);
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

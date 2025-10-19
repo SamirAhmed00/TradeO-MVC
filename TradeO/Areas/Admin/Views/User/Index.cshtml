@@ -1,0 +1,201 @@
+﻿@model IEnumerable<TradeO.Models.ApplicationUser>
+
+@{
+    ViewData["Title"] = "User Management";
+}
+
+<div class="container py-4">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-primary text-white p-4 rounded-top-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="mb-0 fs-3">
+                    <i class="bi bi-people-fill me-2"></i> User Management
+                </h2>
+                @* Optional: Link to Create/Register New User Page *@
+                @* <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-light rounded-2 px-4">
+                    <i class="bi bi-person-plus-fill me-1"></i> Add New User
+                </a> *@
+            </div>
+        </div>
+        <div class="card-body p-4">
+
+            @* Notification Messages *@
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success rounded-2" role="alert">
+                    @TempData["Success"]
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger rounded-2" role="alert">
+                    @TempData["Error"]
+                </div>
+            }
+            @if (TempData["Message"] != null)
+            {
+                <div class="alert alert-info rounded-2" role="alert">
+                    @TempData["Message"]
+                </div>
+            }
+
+            <div class="mb-4">
+                <label for="searchInput" class="form-label fw-bold">Search Users</label>
+                <input type="text" id="searchInput" class="form-control border-secondary border-2 fs-5 w-100 rounded-2 text-black" placeholder="Search by Name, Email or Role...">
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover table-striped align-middle" id="userTable">
+                    <thead class="bg-light">
+                        <tr>
+                            <th scope="col" class="text-secondary fw-bold">Name</th>
+                            <th scope="col" class="text-secondary fw-bold">Email</th>
+                            <th scope="col" class="text-secondary fw-bold">Phone</th>
+                            <th scope="col" class="text-secondary fw-bold">Role</th>
+                            <th scope="col" class="text-secondary fw-bold">Company</th>
+                            <th scope="col" class="text-secondary fw-bold text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model)
+                        {
+                            <tr class="user-row">
+                                <td class="user-search-data">@user.Name</td>
+                                <td class="user-search-data text-muted">@user.Email</td>
+                                <td>@user.PhoneNumber</td>
+                                <td class="user-search-data">
+                                    <span class="badge bg-info text-dark rounded-2">@user.Role</span>
+                                </td>
+                                <td>@(user.Company?.Name ?? "N/A")</td>
+                                <td class="text-center d-flex gap-2 justify-content-center">
+
+                                    @* Lock/Unlock Button (Traditional MVC POST) *@
+                                    <form asp-action="LockUnlock" asp-route-id="@user.Id" method="post" style="display:inline;">
+                                        @Html.AntiForgeryToken()
+                                        @if (user.LockoutEnd != null && user.LockoutEnd > DateTime.Now)
+                                        {
+                                            <button type="submit" class="btn btn-sm btn-success rounded-2" title="Unlock User">
+                                                <i class="bi bi-unlock-fill"></i>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button type="submit" class="btn btn-sm btn-warning rounded-2" title="Lock User">
+                                                <i class="bi bi-lock-fill"></i>
+                                            </button>
+                                        }
+                                    </form>
+
+                                    @* Role Management Button *@
+                                    <a asp-action="RoleManagment" asp-route-userId="@user.Id" class="btn btn-sm btn-primary rounded-2" title="Manage Role">
+                                        <i class="bi bi-person-gear"></i> Role
+                                    </a>
+
+                                    @* Delete Button (Opens Modal) *@
+                                    <button type="button" class="btn btn-sm btn-danger rounded-2"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#userDeleteModal"
+                                            data-user-name="@user.Name"
+                                            data-user-id="@user.Id"
+                                            title="Delete User">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="userDeleteModal" tabindex="-1" aria-labelledby="userDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 shadow-lg">
+            <div class="modal-header bg-danger text-white rounded-top-4">
+                <h1 class="modal-title fs-5" id="userDeleteModalLabel">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i> Confirm User Deletion
+                </h1>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body p-4">
+                <p id="userToDeleteMessage" class="fs-6 text-dark mb-3">
+                    Are you sure you want to delete this user?
+                </p>
+                <div class="alert alert-warning border-0 rounded-2" role="alert">
+                    <i class="bi bi-shield-exclamation me-2"></i> This action is permanent and cannot be undone.
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary rounded-2 px-3" data-bs-dismiss="modal">Cancel</button>
+
+                @* NOTE: You need a Delete action in your UserController to handle this form *@
+                <form id="deleteUserForm" asp-action="Delete" asp-controller="User" method="post">
+                    @* Assuming you will add a Delete Action that takes string UserId *@
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="UserId" id="deleteUserId" />
+                    <button type="submit" class="btn btn-danger rounded-2 px-3">
+                        <i class="bi bi-trash-fill me-1"></i> Delete User
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('searchInput');
+            // Select all table rows excluding the header
+            const userRows = document.querySelectorAll('#userTable tbody .user-row');
+
+            searchInput.addEventListener('input', function () {
+                const filterText = this.value.toLowerCase();
+
+                userRows.forEach(row => {
+                    // Combine all relevant search fields (Name, Email, Role)
+                    const searchDataElements = row.querySelectorAll('.user-search-data');
+                    let rowText = '';
+                    searchDataElements.forEach(el => {
+                        rowText += el.textContent.toLowerCase() + ' ';
+                    });
+
+                    // Show or hide the row based on the filter text
+                    if (rowText.includes(filterText)) {
+                        row.classList.remove('d-none');
+                    } else {
+                        row.classList.add('d-none');
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const userDeleteModal = document.getElementById('userDeleteModal');
+
+            userDeleteModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+
+                // 1. Get values from the clicked button
+                const userName = button.getAttribute('data-user-name');
+                const userId = button.getAttribute('data-user-id');
+
+                // 2. Set the modal text dynamically
+                const modalBodyText = userDeleteModal.querySelector('#userToDeleteMessage');
+                modalBodyText.innerHTML = `Are you sure you want to delete user: <span class="text-danger fw-bold fs-6">${userName}</span>? This action is irreversible.`;
+
+                // 3. Set the hidden input with the user ID
+                const deleteInput = userDeleteModal.querySelector('#deleteUserId');
+                deleteInput.value = userId;
+            });
+        });
+    </script>
+}

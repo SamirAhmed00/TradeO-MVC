@@ -1,0 +1,172 @@
+﻿@page
+@using TradeO.Utility
+@model RegisterModel
+@{
+    ViewData["Title"] = "Create Account";
+}
+
+<div class="container py-5 d-flex justify-content-center align-items-center" style="min-height: 90vh;">
+    <div class="card shadow-lg border-0 rounded-4" style="max-width: 480px; width: 100%;">
+        <div class="card-body p-4">
+            @if (User.IsInRole(SD.Role_Admin))
+            {
+                <h2 class="text-center mb-4 text-primary fw-bold">Create Your Account By Admin</h2>
+            }
+            else
+            {
+                <h2 class="text-center mb-4 text-primary fw-bold">Create Your Account</h2>
+            }
+
+            <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+
+                <!-- Full Name -->
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Name" class="form-control rounded-3" placeholder="Full Name" />
+                    <label asp-for="Input.Name">Full Name</label>
+                    <span asp-validation-for="Input.Name" class="text-danger"></span>
+                </div>
+
+                <!-- Street Address -->
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.StreetAddress" class="form-control rounded-3" placeholder="Street Address" />
+                    <label asp-for="Input.StreetAddress">Street Address</label>
+                    <span asp-validation-for="Input.StreetAddress" class="text-danger"></span>
+                </div>
+
+                <!-- City -->
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.City" class="form-control rounded-3" placeholder="City" />
+                    <label asp-for="Input.City">City</label>
+                    <span asp-validation-for="Input.City" class="text-danger"></span>
+                </div>
+
+                <!-- State -->
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.State" class="form-control rounded-3" placeholder="State" />
+                    <label asp-for="Input.State">State</label>
+                    <span asp-validation-for="Input.State" class="text-danger"></span>
+                </div>
+
+                <!-- Zip Code -->
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.PostalCode" class="form-control rounded-3" placeholder="Zip Code" />
+                    <label asp-for="Input.PostalCode">Zip Code</label>
+                    <span asp-validation-for="Input.PostalCode" class="text-danger"></span>
+                </div>
+
+                <!-- Phone Number -->
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.PhoneNumber" class="form-control rounded-3" placeholder="Phone Number" />
+                    <label asp-for="Input.PhoneNumber">Phone Number</label>
+                    <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                </div>
+
+                <!-- Email -->
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Email" class="form-control rounded-3" autocomplete="username" placeholder="name@example.com" />
+                    <label asp-for="Input.Email">Email</label>
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+
+                <!-- Password -->
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Password" class="form-control rounded-3" type="password" autocomplete="new-password" placeholder="Password" />
+                    <label asp-for="Input.Password">Password</label>
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="form-floating mb-4">
+                    <input asp-for="Input.ConfirmPassword" class="form-control rounded-3" type="password" autocomplete="new-password" placeholder="Confirm Password" />
+                    <label asp-for="Input.ConfirmPassword">Confirm Password</label>
+                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                </div>
+
+                @if(User.IsInRole(SD.Role_Admin))
+                {
+                    <!-- Role Selection -->
+                    <div class="form-floating mb-4">
+                        <select asp-items="@Model.Input.RoleList" asp-for="Input.Role" class="form-select rounded-3">
+                            <option disabled selected>-- Select Role --</option>
+                        </select>
+                        <label>Role</label>
+                    </div>
+
+                    <!-- Comapny Selection -->
+                    <div class="form-floating mb-4">
+                        <select asp-items="@Model.Input.CompanyList" asp-for="Input.CompanyId" class="form-select rounded-3">
+                            <option disabled selected>-- Select Company --</option>
+                        </select>
+                        <label id="companyLabel">Company</label>
+                    </div>
+                    
+                }
+
+                <!-- Submit Button -->
+                <button id="registerSubmit" type="submit" class="btn btn-primary w-100 py-2 fw-semibold rounded-3">
+                    Register
+                </button>
+            </form>
+
+            <!-- Divider -->
+            <div class="text-center my-3 text-muted">— or —</div>
+
+            <!-- External Logins -->
+            @if ((Model.ExternalLogins?.Count ?? 0) > 0)
+            {
+                <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                    <div class="d-grid gap-2">
+                        @foreach (var provider in Model.ExternalLogins!)
+                        {
+                            <button type="submit" class="btn btn-outline-secondary w-100 rounded-3" name="provider" value="@provider.Name">
+                                <i class="bi bi-box-arrow-in-right me-1"></i> Sign in with @provider.DisplayName
+                            </button>
+                        }
+                    </div>
+                </form>
+            }
+            else
+            {
+                <p class="text-center small text-muted mt-3">
+                    No external authentication services configured.
+                    <a href="https://go.microsoft.com/fwlink/?LinkID=532715" target="_blank">Learn more</a>.
+                </p>
+            }
+
+            <hr class="my-4" />
+            <p class="text-center mb-0">
+                Already have an account?
+                <a asp-page="./Login" class="text-decoration-none fw-semibold text-primary">Login</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    @* JS Code For Toggle Company SelectListItems Only When Role == Company *@
+    <script>
+        $(document).ready(function () {
+            $('#Input_CompanyId').hide();
+            $('#companyLabel').hide();
+
+            $('#Input_Role').change(function() {
+                var selection = $('#Input_Role option:selected').text();
+
+                if(selection === 'Company'){
+                    $('#Input_CompanyId').show();
+                    $('#companyLabel').show();
+                }
+                else 
+                {
+                    $('#Input_CompanyId').hide();
+                    $('#companyLabel').hide();
+
+                }
+            })
+        
+        } )
+    </script>
+}
